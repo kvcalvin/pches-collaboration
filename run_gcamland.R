@@ -1,0 +1,6 @@
+setwd("./gcamland")
+devtools::load_all('.')
+source("R/generate_price_data.R")
+run_model(PCHES.SCENARIO.INFO, aVerbose=TRUE)
+export_results(PCHES.SCENARIO.INFO)
+setwd("..")
