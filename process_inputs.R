@@ -27,19 +27,18 @@ run_process_inputs <- function(DNDC_FILE=DNDC.FILE.NAME, DREM_FILE=REM.FILE.NAME
   
   # Tidy data
   price %>%
-    rename(sector = X.1, State = X) %>%
-    gather(year, rem_price, -sector, -State) ->
+    gather(year, rem_price, -region, -crop) ->
     price
   
   # Map these to the gcamland price file
   price_template %>%
     gather(year, value, -scenario, -region, -subregion, -sector, -Units) %>%
     left_join(reg_mapping, by=c("subregion" = "GCAM_state")) %>%
-    left_join(price, by=c("REM_region" = "State", "sector", "year")) %>%
-    select(-value) %>%
+    left_join(price, by=c("REM_region" = "region", "sector" = "crop", "year")) %>%
     spread(year, rem_price) %>%
     replace_na(list(X2010 = 1, X2015 = 1, X2020 = 1, X2050 = 1)) %>%
     select(scenario, region, subregion, sector, X2010, X2015, X2020, X2050, Units) %>%
+#    rename(`2010` = X2010, `2015` = X2015, `2020` = X2020, `2050` = X2050) %>%
     mutate(scenario = SCEN_NAME) ->
     gcamland_price
   
