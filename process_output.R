@@ -45,5 +45,14 @@ run_process_outputs <- function( SCEN_NAME = SCEN.NAME ) {
     filter(State %in% PCHES_STATES) ->
     pches_output
   
+  # =============
+  # Format for easier import into DREM
+  pches_output %>%
+    mutate(State = if_else(State == "New Mexico", "New_Mexico", State)) %>%
+    rename(CurrIteration_Land = CurrIteration.land) %>% 
+    rename(BAU_land = BAU.land ) %>% 
+    rename(delta_land = delta.land) ->
+    pches_output
+  
   write.csv(pches_output, paste0("./FinalOutput/pches_output_", SCEN_NAME, ".csv"), row.names = FALSE)
 }

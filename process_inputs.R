@@ -60,7 +60,7 @@ run_process_inputs <- function(DNDC_FILE=DNDC.FILE.NAME, DREM_FILE=REM.FILE.NAME
     # Multipliers of 0 only happen when region doesn't produce. For gcamland, make those equal to 1
     mutate(multiplier = if_else(multiplier == 0, 1, multiplier)) %>%
     # Rename states
-    mutate(subregion = if_else(subregion == "New.Mexico", "New Mexico", subregion)) %>%
+    mutate(subregion = if_else(subregion == "New_Mexico", "New Mexico", subregion)) %>%
     # Construct supplysector name and compute ag prod growth
     mutate(AgSupplySubsector = paste(IMPLAN_crop, subregion, sep="_"),
            NewAgProdChange = multiplier^(1/5) - 1,
