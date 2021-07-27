@@ -55,7 +55,6 @@ run_process_inputs <- function(DNDC_FILE=DNDC.FILE.NAME, DREM_FILE=REM.FILE.NAME
   
   # Reformat data
   DNDC %>%
-    select(-X) %>%
     gather(subregion, multiplier, -IMPLAN_crop) %>%
     # Multipliers of 0 only happen when region doesn't produce. For gcamland, make those equal to 1
     mutate(multiplier = if_else(multiplier == 0, 1, multiplier)) %>%
