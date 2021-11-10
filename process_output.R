@@ -22,7 +22,7 @@ PCHES_STATES <- c("Washington", "Oregon", "California", "Arizona", "New Mexico",
 
 run_process_outputs <- function( SCEN_NAME = SCEN.NAME ) {
   # ==============
-  # Calculate ratio to BAU
+  # Calculate ratio of land to BAU
   bau_output %>%
     select(name, year, land.allocation) %>%
     rename(BAU.land = land.allocation) ->
@@ -55,4 +55,30 @@ run_process_outputs <- function( SCEN_NAME = SCEN.NAME ) {
     pches_output
   
   write.csv(pches_output, paste0("./FinalOutput/pches_output_", SCEN_NAME, ".csv"), row.names = FALSE)
+  
+  # ==============
+  # Calculate ratio of yield by crop/state to 2010
+  cntf_output %>%
+    filter(!is.na(harvested.land),
+           year %in% c(2010, 2015)) %>% # Only include crops
+    select(name, year, land.allocation, expectedYield) %>%
+    separate(name, into=c("Crop", "State", "Management"), sep="_") %>%
+    mutate(prod = expectedYield * land.allocation,
+           State = if_else(State %in% PCHES_STATES, State, "ROW")) %>%
+    group_by(year, Crop, State) %>%
+    summarize(land = sum(land.allocation), prod = sum(prod)) %>%
+    ungroup() %>%
+    mutate(yield = prod / land) %>%
+    select(Crop, State, year, yield) %>%
+    spread(year, yield) %>%
+    mutate(productivityIndex = `2015` / `2010`) ->
+    yield_index
+  
+  # =============
+  # Format for easier import into DREM
+  yield_index %>%
+    mutate(State = if_else(State == "New Mexico", "New_Mexico", State)) ->
+    yield_index
+  
+  write.csv(yield_index, paste0("./FinalOutput/yield_index_", SCEN_NAME, ".csv"), row.names = FALSE)
 }
