@@ -19,33 +19,36 @@ REM.FILE.NAME <- "REMInputs/DREM_state_scenario1_iteration1_prices.csv"
 
 # ==============
 # Calculate weighted-average prices
-run_process_inputs <- function(DNDC_FILE=DNDC.FILE.NAME, DREM_FILE=REM.FILE.NAME, SCEN_NAME=SCEN.NAME) {
-  # Read in data
-  reg_mapping <- read.csv("./mapping.csv")
-  price <- read.csv(DREM_FILE)
-  price_template <- read.csv("./ExampleFiles/AgPrices_PCHES_template.csv", skip = 1)
-  
-  # Tidy data
-  price %>%
-    gather(year, rem_price, -region, -crop) ->
-    price
-  
-  # Map these to the gcamland price file
-  price_template %>%
-    gather(year, value, -scenario, -region, -subregion, -sector, -Units) %>%
-    left_join(reg_mapping, by=c("subregion" = "GCAM_state")) %>%
-    left_join(price, by=c("REM_region" = "region", "sector" = "crop", "year")) %>%
-    spread(year, rem_price) %>%
-    replace_na(list(X2010 = 1, X2015 = 1, X2020 = 1, X2050 = 1)) %>%
-    select(scenario, region, subregion, sector, X2010, X2015, X2020, X2050, Units) %>%
-#    rename(`2010` = X2010, `2015` = X2015, `2020` = X2020, `2050` = X2050) %>%
-    mutate(scenario = SCEN_NAME) ->
-    gcamland_price
-  
+run_process_inputs <- function(DNDC_FILE=DNDC.FILE.NAME, DREM_FILE=REM.FILE.NAME, SCEN_NAME=SCEN.NAME, ITER1="FALSE") {
+  # For iteration 1, we use BAU prices. For all other iterations, process DREM input
+  if(ITER1 == "FALSE") {
+    # Read in data
+    reg_mapping <- read.csv("./mapping.csv")
+    price <- read.csv(DREM_FILE)
+    price_template <- read.csv("./ExampleFiles/AgPrices_PCHES_template.csv", skip = 1)
+    
+    # Tidy data
+    price %>%
+      gather(year, rem_price, -region, -crop) ->
+      price
+    
+    # Map these to the gcamland price file
+    price_template %>%
+      gather(year, value, -scenario, -region, -subregion, -sector, -Units) %>%
+      left_join(reg_mapping, by=c("subregion" = "GCAM_state")) %>%
+      left_join(price, by=c("REM_region" = "region", "sector" = "crop", "year")) %>%
+      spread(year, rem_price) %>%
+      replace_na(list(X2010 = 1, X2015 = 1, X2020 = 1, X2050 = 1)) %>%
+      select(scenario, region, subregion, sector, X2010, X2015, X2020, X2050, Units) %>%
+      #    rename(`2010` = X2010, `2015` = X2015, `2020` = X2020, `2050` = X2050) %>%
+      mutate(scenario = SCEN_NAME) ->
+      gcamland_price
+  } else {
+    gcamland_price <- read.csv("./gcamland/inst/extdata/scenario-data/AgPrices_PCHES.csv", skip=1)
+  }
   # Write output
   cat('AgPrices \n',  file = "./FinalInput/AgPrices_PCHES.csv")
   write.table(gcamland_price, "./FinalInput/AgPrices_PCHES.csv", row.names = FALSE, append = TRUE, sep=",")
-  
   # ==============
   # Calculate ag prod change
   

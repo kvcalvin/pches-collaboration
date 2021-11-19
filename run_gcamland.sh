@@ -4,6 +4,7 @@
 export SCEN_NAME="Scen1_Iter1"
 export DREM_FILE_NAME="DREM_test.csv"
 export DNDC_FILE_NAME="DNDC_test.csv"
+export ITER1="TRUE"
 
 # Clone gcamland
 # Using clone instead of install_github because we need to know where it is installed
@@ -24,7 +25,7 @@ cp $DREM_FILE_NAME ./DREMInputs
 cp $DNDC_FILE_NAME ./DNDCInputs
 
 # Then, run the pre-processing code
-Rscript -e "source('./process_inputs.R'); run_process_inputs('$DNDC_FILE_NAME', '$DREM_FILE_NAME', '$SCEN_NAME')"
+Rscript -e "source('./process_inputs.R'); run_process_inputs('$DNDC_FILE_NAME', '$DREM_FILE_NAME', '$SCEN_NAME', '$ITER1')"
 
 # Next, copy the pre-processing results into the gcamland directory
 cp ./FinalInput/AgPrices_PCHES.csv ./gcamland/inst/extdata/scenario-data/
