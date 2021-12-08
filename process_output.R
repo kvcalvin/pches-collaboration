@@ -68,9 +68,8 @@ run_process_outputs <- function( SCEN_NAME = SCEN.NAME ) {
     group_by(year, Crop, State) %>%
     summarize(land = sum(land.allocation), prod = sum(prod)) %>%
     ungroup() %>%
-    mutate(yield = prod / land) %>%
-    select(Crop, State, year, yield) %>%
-    spread(year, yield) %>%
+    select(Crop, State, year, prod) %>%
+    spread(year, prod) %>%
     mutate(productivityIndex = `2015` / `2010`) ->
     yield_index
   
