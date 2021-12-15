@@ -1,10 +1,12 @@
 #!/bin/bash   
 
 # Set environment variables
-export SCEN_NAME="Scen1_Iter1"
+export SCEN_NAME="Scen1_Iter2"
 export DREM_FILE_NAME="DREM_test.csv"
 export DNDC_FILE_NAME="DNDC_test.csv"
+export WBM_FILE_NAME="WBM_test.csv"
 export ITER1="TRUE"
+export SCEN3="TRUE"
 
 # Clone gcamland
 # Using clone instead of install_github because we need to know where it is installed
@@ -24,15 +26,24 @@ mkdir -p FinalInput
 cp $DREM_FILE_NAME ./DREMInputs
 cp $DNDC_FILE_NAME ./DNDCInputs
 
+if [ $SCEN3="TRUE" ]; then
+	mkdir -p WBMInputs
+	cp $WBM_FILE_NAME ./WBMInputs
+fi
+
 # Then, run the pre-processing code
-Rscript -e "source('./process_inputs.R'); run_process_inputs('$DNDC_FILE_NAME', '$DREM_FILE_NAME', '$SCEN_NAME', '$ITER1')"
+Rscript -e "source('./process_inputs.R'); run_process_inputs('$DNDC_FILE_NAME', '$DREM_FILE_NAME', '$SCEN_NAME', '$ITER1', '$SCEN3')"
 
 # Next, copy the pre-processing results into the gcamland directory
 cp ./FinalInput/AgPrices_PCHES.csv ./gcamland/inst/extdata/scenario-data/
 cp ./FinalInput/AgProdChange_PCHES.csv ./gcamland/inst/extdata/scenario-data/
 
+if [ $SCEN3="TRUE" ]; then
+	cp ./FinalInput/PCHES_constraint.csv ./gcamland/inst/extdata/scenario-data/
+fi
+
 # Now, run gcamland
-Rscript -e "source('./run_gcamland.R')"
+Rscript -e "source('./run_gcamland.R'); run_gcamland('$SCEN3')"
 
 # Next, copy outputs to the right directory
 mkdir -p FinalOutput
