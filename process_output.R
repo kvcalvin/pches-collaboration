@@ -55,6 +55,7 @@ run_process_outputs <- function( SCEN_NAME = SCEN.NAME ) {
     pches_output
   
   write.csv(pches_output, paste0("./FinalOutput/pches_output_", SCEN_NAME, ".csv"), row.names = FALSE)
+  write.csv(cntf_output, paste0("./FinalOutput/all_output_PCHES_", SCEN_NAME, ".csv"), row.names = FALSE)
   
   # ==============
   # Calculate ratio of yield by crop/state to 2010
