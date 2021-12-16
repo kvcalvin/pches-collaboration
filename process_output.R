@@ -12,7 +12,7 @@ SCEN.NAME <- "Scen1_Iter1"
 
 # ==============
 # Read gcamland output
-bau_output <- read.csv("./BAU_Output_PCHES.csv")
+bau_output <- read.csv("./BAU_output_PCHES.csv")
 cntf_output <- read.csv("./FinalOutput/output_Reference_Perfect_PCHES.csv")
 
 # ==============
